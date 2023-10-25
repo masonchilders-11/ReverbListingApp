@@ -1,3 +1,4 @@
+import { useLoaderData } from "@remix-run/react";
 import {
   Badge,
   IndexTable,
@@ -13,16 +14,62 @@ import {
   VerticalStack,
   Text
 } from "@shopify/polaris";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { authenticate } from "~/shopify.server";
 
+export const loader = async ({ request }) => {
+  const { admin } = await authenticate.admin(request);
+
+  const query = 
+  `{
+    products(first: 25) {
+      edges {
+        node {
+          id
+          title
+          images(first: 1) {
+            edges {
+              node {
+                url
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                sku
+                price
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+  const response = await admin.graphql(query);
+
+  const responseJson = await response.json();
+
+  return responseJson.data.products.edges.map(edge => {
+    const node = edge.node;
+    return {
+      id: node.id,
+      image: node.images.edges[0]?.node?.url,
+      name: node.title,
+      sku: node.variants.edges[0]?.node?.sku,
+      price: node.variants.edges[0]?.node?.price,
+    };
+  });
+};
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
+  const initialProducts = useLoaderData();
+  const DEFAULT_IMAGE_URL = "https://via.placeholder.com/50";
+
   const [queryValue, setQueryValue] = useState("");
 
-  let filteredProducts = products;
+  let filteredProducts = initialProducts;
   if (queryValue) {
     filteredProducts = filteredProducts.filter((product) =>
       product.name.toLowerCase().includes(queryValue.toLowerCase())
@@ -40,7 +87,7 @@ export default function ProductsPage() {
     plural: "products",
   };
   const { selectedResources, allResourcesSelected, handleSelectionChange } =
-    useIndexResourceState(products);
+    useIndexResourceState(initialProducts);
 
   const rowMarkup = filteredProducts.map(
     (
@@ -49,12 +96,12 @@ export default function ProductsPage() {
         image,
         name,
         sku,
-        inStock,
-        stock,
+        inStock = true, // inferred default if not provided in actual data
+        stock = 0,      // inferred default
         price,
-        status,
-        lastModified,
-        reverbActive,
+        status = <Badge status="success">Active</Badge>,          // inferred default
+        lastModified = "Unknown Date",   // inferred default
+        reverbActive = <Badge status="info">Unknown</Badge>,     // inferred default
       },
       index
     ) => (
@@ -65,7 +112,12 @@ export default function ProductsPage() {
         position={index}
       >
         <IndexTable.Cell>
-        <img src={image} alt={"Product " + name} style={{ display: 'block', margin: 'auto'}} title={name}/>
+        <img 
+          src={image || DEFAULT_IMAGE_URL} 
+          alt={"Product " + name} 
+          style={{ display: 'block', margin: 'auto', maxWidth: '50px', maxHeight: '50px' }} 
+          title={name}
+        />
       </IndexTable.Cell>
       <IndexTable.Cell>
         <div title={name}>
@@ -136,7 +188,7 @@ export default function ProductsPage() {
           ) : (
             <IndexTable
             resourceName={resourceName}
-            itemCount={products.length}
+            itemCount={initialProducts.length}
             selectedItemsCount={
               allResourcesSelected ? "All" : selectedResources.length
             }

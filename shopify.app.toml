@@ -2,7 +2,7 @@
 
 name = "ListEasy"
 client_id = "ed5cb3ae7314d6dba6a0d0f7f9486545"
-application_url = "https://quarterly-browse-occur-dave.trycloudflare.com"
+application_url = "https://chance-representative-illinois-poems.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_products,read_orders,write_orders,read_customers,w
 
 [auth]
 redirect_urls = [
-  "https://quarterly-browse-occur-dave.trycloudflare.com/auth/callback",
-  "https://quarterly-browse-occur-dave.trycloudflare.com/auth/shopify/callback",
-  "https://quarterly-browse-occur-dave.trycloudflare.com/api/auth/callback"
+  "https://chance-representative-illinois-poems.trycloudflare.com/auth/callback",
+  "https://chance-representative-illinois-poems.trycloudflare.com/auth/shopify/callback",
+  "https://chance-representative-illinois-poems.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

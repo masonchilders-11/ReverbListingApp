@@ -27,6 +27,8 @@ export const loader = async ({ request }) => {
         node {
           id
           title
+          status
+          totalInventory
           images(first: 1) {
             edges {
               node {
@@ -39,6 +41,7 @@ export const loader = async ({ request }) => {
               node {
                 sku
                 price
+                updatedAt
               }
             }
           }
@@ -59,6 +62,9 @@ export const loader = async ({ request }) => {
       name: node.title,
       sku: node.variants.edges[0]?.node?.sku,
       price: node.variants.edges[0]?.node?.price,
+      status: node.status,
+      stock: node.totalInventory,
+      lastModified: node.variants.edges[0]?.node?.updatedAt?.substring(0, 10),
     };
   });
 };
@@ -96,11 +102,11 @@ export default function ProductsPage() {
         image,
         name,
         sku,
-        inStock = true, // inferred default if not provided in actual data
-        stock = 0,      // inferred default
+        stock,
+        inStock = stock > 0,
         price,
-        status = <Badge status="success">Active</Badge>,          // inferred default
-        lastModified = "Unknown Date",   // inferred default
+        status,
+        lastModified,
         reverbActive = <Badge status="info">Unknown</Badge>,     // inferred default
       },
       index
@@ -128,7 +134,20 @@ export default function ProductsPage() {
       <IndexTable.Cell>{inStock ? "In Stock" : "Out of Stock"}</IndexTable.Cell>
       <IndexTable.Cell>{stock}</IndexTable.Cell>
       <IndexTable.Cell>{price}</IndexTable.Cell>
-      <IndexTable.Cell>{status}</IndexTable.Cell>
+      <IndexTable.Cell>
+        {(() => {
+          switch (status) {
+            case "ACTIVE":
+              return <Badge status="success">Active</Badge>;
+            case "DRAFT":
+              return <Badge status="info">Draft</Badge>;
+            case "ARCHIVED":
+              return <Badge status="attention">Archived</Badge>;
+            default:
+              return <Badge status="warning">Unknown</Badge>;
+          }
+        })()}
+      </IndexTable.Cell>
       <IndexTable.Cell>{lastModified}</IndexTable.Cell>
       <IndexTable.Cell>{reverbActive}</IndexTable.Cell>
       </IndexTable.Row>
@@ -236,6 +255,7 @@ export default function ProductsPage() {
               }}
               type="table"
               hasNext
+              hasPrevious
               label="1-50 of 8,450 orders"
             />
           </div>

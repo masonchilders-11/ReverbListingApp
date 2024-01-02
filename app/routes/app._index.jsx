@@ -35,6 +35,9 @@ export const loader = async ({ request }) => {
 
 export async function action({ request }) {
   const { admin } = await authenticate.admin(request);
+  const formData = new URLSearchParams(await request.text());
+  const paginationAction = formData.get("pagination");
+  console.log(paginationAction)
 
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
@@ -101,7 +104,7 @@ export default function Index() {
   }, [productId]);
 
   const generateProduct = () => {
-    submit({}, { replace: true, method: "POST" });
+    submit({ pagination: "next" }, { replace: true, method: "POST" });
   };  
 
   return (

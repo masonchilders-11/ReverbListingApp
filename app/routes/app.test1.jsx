@@ -54,7 +54,8 @@ export const loader = async ({ request }) => {
 
   const responseJson = await response.json();
 
-  return responseJson.data.products.edges.map(edge => {
+  return {
+    products: responseJson.data.products.edges.map(edge => {
     const node = edge.node;
     return {
       id: node.id,
@@ -66,11 +67,13 @@ export const loader = async ({ request }) => {
       stock: node.totalInventory,
       lastModified: node.variants.edges[0]?.node?.updatedAt?.substring(0, 10),
     };
-  });
+  }),
+  reverbToken: process.env.REVERB_API_KEY,
+};
 };
 
 export default function ProductsPage() {
-  const initialProducts = useLoaderData();
+  const { products: initialProducts, reverbToken } = useLoaderData();
   const DEFAULT_IMAGE_URL = "https://via.placeholder.com/50";
 
   const [queryValue, setQueryValue] = useState("");
@@ -172,6 +175,67 @@ export default function ProductsPage() {
     setQueryValue("");
   }, [])
 
+  const createListingOnReverb = async (product) => {
+    try {
+      // Define the URL for the sandbox environment
+      const url = 'https://sandbox.reverb.com/api/listings';
+  
+      // Create the data payload
+      const payload = {
+        make: "Example Make", // Replace with actual data or mapping logic
+        model: "Example Model", // Replace with actual data or mapping logic
+        photos: product.image ? [product.image] : [], // Assuming a single image URL or an array of URLs
+        description: "Examle description", // Or any other description text
+        finish: "Example Finish", // Replace with actual data
+        price: {
+          amount: product.price,
+          currency: "USD"
+        },
+        title: product.name,
+        year: "2020s", // Replace with actual data
+        sku: product.sku,
+        inventory: product.stock,
+        offers_enabled: true, // Based on your preferences
+        handmade: false, // Based on your product
+      };
+      console.log(JSON.stringify(payload));
+      // Make the API call to your server endpoint
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/hal+json',
+          'Accept-Version': '3.0',
+          'Authorization': `Bearer ${reverbToken}` // Using environment variable for security
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log('Listing created on Reverb:', result);
+    } catch (error) {
+      console.error('Error creating listing on Reverb:', error);
+    }
+  };
+
+  const promotedBulkActions = [
+    {
+      content: 'Create Listing on Reverb',
+      onAction: () => {
+        const selectedProducts = initialProducts.filter(product => selectedResources.includes(product.id));
+        selectedProducts.forEach(product => createListingOnReverb(product));
+      }
+    },
+    {
+      content: 'Update Listing on Reverb',
+      onAction: () => console.log('Todo: implement update listing on reverb'),
+    },
+  ];
+
   return (
     <Frame>
       <Page title={"Products"} fullWidth>
@@ -188,7 +252,7 @@ export default function ProductsPage() {
                 onChange={handleInputChange}
                 label=""
                 placeholder="Type to search..."
-                autoComplete="off"
+                autoComplete="on"
                 clearButton
                 onClearButtonClick={handleClearButtonClick}
               />
@@ -235,6 +299,7 @@ export default function ProductsPage() {
               { title: "Last Modified" },
               { title: "Status on Reverb" },
             ]}
+            promotedBulkActions={promotedBulkActions}
             >
               {rowMarkup}
             </IndexTable>

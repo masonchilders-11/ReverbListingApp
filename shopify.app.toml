@@ -2,7 +2,7 @@
 
 name = "ListEasy"
 client_id = "ed5cb3ae7314d6dba6a0d0f7f9486545"
-application_url = "https://european-stays-future-peaceful.trycloudflare.com"
+application_url = "https://shape-webmasters-given-pens.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_products,read_orders,write_orders,read_customers,w
 
 [auth]
 redirect_urls = [
-  "https://european-stays-future-peaceful.trycloudflare.com/auth/callback",
-  "https://european-stays-future-peaceful.trycloudflare.com/auth/shopify/callback",
-  "https://european-stays-future-peaceful.trycloudflare.com/api/auth/callback"
+  "https://shape-webmasters-given-pens.trycloudflare.com/auth/callback",
+  "https://shape-webmasters-given-pens.trycloudflare.com/auth/shopify/callback",
+  "https://shape-webmasters-given-pens.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

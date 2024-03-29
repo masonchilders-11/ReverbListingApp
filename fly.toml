@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for reverb-listing-app on 2024-03-23T21:12:14-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'reverb-listing-app'
+primary_region = 'ord'
+
+[build]
+
+[env]
+  PORT = "3000"
+  SHOPIFY_APP_URL = "https://reverb-listing-app.fly.dev"
+  SHOPIFY_API_KEY = "ed5cb3ae7314d6dba6a0d0f7f9486545"
+  SCOPES= "write_products,read_products,read_orders,write_orders,read_customers,write_customers"
+  REVERB_API_KEY= "3ffe7434d9f1ee627f8d0856a20c23c45f2e470f2b477b6a2b5962158d92763c"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

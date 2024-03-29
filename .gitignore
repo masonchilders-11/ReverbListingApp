@@ -10,6 +10,7 @@ node_modules
 /prisma/dev.sqlite-journal
 database.sqlite
 
+fly.toml
 .env
 package-lock.json
 yarn.lock

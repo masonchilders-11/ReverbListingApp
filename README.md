@@ -14,4 +14,5 @@ Reverb Listing App (working name) is a Shopify application designed to bridge Sh
 - **Frontend**: Remix, React, Polaris
 - **Backend**: Shopify GraphQL API, Reverb API, Node.js
 
-## Look at app/routes/app_index.jsx for the app functionality logic
+## Look at [app/routes/app_index.jsx](https://github.com/masonchilders-11/ReverbListingApp/blob/main/app/routes/app_index.jsx) for the app functionality logic
+

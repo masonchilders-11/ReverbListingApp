@@ -7,7 +7,7 @@ Reverb Listing App (working name) is a Shopify application designed to bridge Sh
 ## Features
 
 - **Product Management**: Efficiently manage and display products, offering search-based querying for streamlined user experiences.
-- **Integration with Reverb's API**: Allows for automatic publication from Shopify to Reverb with custom inputs to ensure an accurate publication
+- **Integration with Reverb's API**: Combines interactions between Shopify's API and Reverb's API to Allow for automatic publication from Shopify to Reverb with custom inputs to ensure an accurate publication.
 
 ## Technical Stack
 
